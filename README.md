@@ -3,7 +3,7 @@
 
 helm function required for us future use how to define in _helpers.tpl file and call those values in all files in template folder
 
-**For data structures that have both a key and a value, we can use range to get both. For example, we can loop through .Values.favorite like this:**
+# For data structures that have both a key and a value, we can use range to get both. For example, we can loop through .Values.favorite like this:**
 
 apiVersion: v1
 kind: ConfigMap
@@ -15,7 +15,7 @@ data:
   {{ $key }}: {{ $val | quote }}
   {{- end }}
   
-**  equal and not equal**
+#  equal and not equal**
   eq
 Returns the boolean equality of the arguments (e.g., Arg1 == Arg2).
 
@@ -28,13 +28,13 @@ ne .Arg1 .Arg2
 
 
 
-**trimPrefix**
+# trimPrefix**
 Trim just the prefix from a string:
 
 trimPrefix "-" "-hello"
 The above returns hello
 
-**trimSuffix**
+# trimSuffix**
 Trim just the suffix from a string:
 
 trimSuffix "-" "hello-"
@@ -42,7 +42,7 @@ The above returns hello
 
 
 
-**trunc**
+# trunc**
 Truncate a string
 
 trunc 5 "hello world"
@@ -51,7 +51,7 @@ The above produces hello.
 trunc -5 "hello world"
 The above produces world.
 
-**contains
+# contains
 Test to see if one string is contained inside of another:**
 
 contains "cat" "catch"
@@ -63,7 +63,7 @@ The hasPrefix and hasSuffix functions test whether a string has a given prefix o
 hasPrefix "cat" "catch"
 The above returns true because catch has the prefix cat.
 
-**quote and squote**
+# quote and squote**
 These functions wrap a string in double quotes (quote) or single quotes (squote).
 
 cat
@@ -72,13 +72,13 @@ The cat function concatenates multiple strings together into one, separating the
 cat "hello" "beautiful" "world"
 The above produces hello beautiful world
 
-**indent**
+# indent**
 The indent function indents every line in a given string to the specified indent width. This is useful when aligning multi-line strings:
 
 indent 4 $lots_of_text
 The above will indent every line of text by 4 space characters.
 
-**nindent**
+# nindent**
 The nindent function is the same as the indent function, but prepends a new line to the beginning of the string.
 
 nindent 4 $lots_of_text
@@ -90,7 +90,7 @@ The above will indent every line of text by 4 space characters and add a new lin
 
 
 
-**fromYaml
+# fromYaml
 The fromYaml function takes a YAML string and returns an object that can be used in templates.**
 
 File at: yamls/person.yaml
@@ -107,7 +107,7 @@ greeting: |
   My hobbies are {{ range $person.hobbies }}{{ . }} {{ end }}.  
   
   
-**fromJson
+# fromJson
 The fromJson function takes a YAML string and returns an object that can be used in templates.**
 
 File at: jsons/person.json
@@ -130,7 +130,7 @@ greeting: |
   
 
 
-**with function**
+# with function**
 **Modifying scope using with
 The next control structure to look at is the with action. This controls variable scoping. Recall that . is a reference to the current scope. So .Values tells the template to find the Values object in the current scope.
 
@@ -178,7 +178,7 @@ Or, we can use $ for accessing the object Release.Name from the parent scope. $ 
   {{- end }}
 After looking at range, we will take a look at template variables, which offer one solution to the scoping issue above.
 
-**Looping with the range action
+# Looping with the range action
 Many programming languages have support for looping using for loops, foreach loops, or similar functional mechanisms. In Helm's template language, the way to iterate through a collection is to use the range operator.**
 
 To start, let's add a list of pizza toppings to our values.yaml file:
@@ -265,7 +265,7 @@ In addition to lists and tuples, range can be used to iterate over collections t
 
 
 
-**Setting the scope of a template**
+# Setting the scope of a template**
 In the template we defined above, we did not use any objects. We just used functions. Let's modify our defined template to include the chart name and chart version:
 
 {{/* Generate basic labels */}}
@@ -318,7 +318,7 @@ metadata:
     version: 0.1.0
 Now {{ .Chart.Name }} resolves to mychart, and {{ .Chart.Version }} resolves to 0.1.0.
 
-**The include function
+# The include function
 Say we've defined a simple template that looks like this:**
 
 {{- define "mychart.app" -}}
@@ -395,3 +395,64 @@ data:
   app_version: "0.1.0"
 It is considered preferable to use include over template in Helm templates simply so that the output formatting can be handled better for YAML documents.
 Sometimes we want to import content, but not as templates. That is, we want to import files verbatim. We can achieve this by accessing files through the .Files object described in the next section.  
+
+
+
+# multiple config file accessing
+Basic example
+With those caveats behind, let's write a template that reads three files into our ConfigMap. To get started, we will add three files to the chart, putting all three directly inside of the mychart/ directory.
+
+config1.toml:
+
+message = Hello from config 1
+config2.toml:
+
+message = This is config 2
+config3.toml:
+
+message = Goodbye from config 3
+Each of these is a simple TOML file (think old-school Windows INI files). We know the names of these files, so we can use a range function to loop through them and inject their contents into our ConfigMap.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+data:
+  {{- $files := .Files }}
+  {{- range tuple "config1.toml" "config2.toml" "config3.toml" }}
+  {{ . }}: |-
+        {{ $files.Get . }}
+  {{- end }}
+This config map uses several of the techniques discussed in previous sections. For example, we create a $files variable to hold a reference to the .Files object. We also use the tuple function to create a list of files that we loop through. Then we print each file name ({{ . }}: |-) followed by the contents of the file {{ $files.Get . }}.
+
+Running this template will produce a single ConfigMap with the contents of all three files:
+
+# Source: mychart/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quieting-giraf-configmap
+data:
+  config1.toml: |-
+        message = Hello from config 1
+
+  config2.toml: |-
+        message = This is config 2
+
+  config3.toml: |-
+        message = Goodbye from config 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
