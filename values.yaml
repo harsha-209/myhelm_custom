@@ -1,14 +1,12 @@
+
 replica: 1
+
 image: nginx
+
+deployment:
+  name: sai
 service:
   port: 80
-deployment:
-  name: harshad
 labels:
   name: harshad
-  city: Ind
-  phone: 98989
-
-resources: {}
-  
-  
+  city: aus

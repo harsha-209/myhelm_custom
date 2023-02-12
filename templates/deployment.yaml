@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  labels:
+    {{- include "harshad.Labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replica }}
+  selector:
+    matchLabels:
+      {{- include "harshad.Labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "harshad.Labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
