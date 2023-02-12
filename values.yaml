@@ -1,0 +1,14 @@
+replica: 1
+image: nginx
+service:
+  port: 80
+deployment:
+  name: harshad
+labels:
+  name: harshad
+  city: Ind
+  phone: 98989
+
+resources: {}
+  
+  
