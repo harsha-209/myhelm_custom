@@ -3,7 +3,8 @@ kind: Deployment
 metadata:
   name: {{ .Values.deployment.name }}
   labels:
-    {{- include "harshad.Labels" . | nindent 4 }}
+    app: key
+    {{- include "myharshad.labels" . | indent 4 }} ### when a new empty line is forming us indent instead of nindent
 spec:
   replicas: {{ .Values.replica }}
   selector:

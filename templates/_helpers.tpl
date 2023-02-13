@@ -7,15 +7,14 @@ name: {{ .Release.Name }}
 {{- end -}}
 
 
-{{/*
+{{- /*
 lables with range function to call multiple keys and values
 */}}
-{{- define "myharshad.labels" -}}
-  {{- range $key, $val := .Values.labels }}
-  {{ $key }}: {{ $val | quote }}
-  {{- end -}}
+{{- define "myharshad.labels" }}
+{{- range $key, $val := .Values.labels }}
+{{ $key }}: {{ $val | quote }}
 {{- end -}}
-
+{{- end -}}
 
 {{/*
 calling configmaps with range function by defined as required below

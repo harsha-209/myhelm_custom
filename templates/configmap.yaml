@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jksconfig
+data:
+  dev.json: |
+{{ .Files.Get "dev.json" | indent 4}}
